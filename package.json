@@ -1,6 +1,6 @@
 {
   "name": "@andrewpopov/eslint-config",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Composable ESLint flat-config presets shared across andrewpopov personal projects.",
   "type": "commonjs",
   "main": "index.cjs",

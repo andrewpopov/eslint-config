@@ -3,13 +3,24 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ESLint } from 'eslint';
 
-import { base, react, next, node, tests, strict, layerBoundary, exemptFilesFromRule } from '../index.cjs';
+import {
+  base,
+  maxLines,
+  react,
+  next,
+  node,
+  tests,
+  strict,
+  layerBoundary,
+  exemptFilesFromRule,
+} from '../index.cjs';
 
 const require = createRequire(import.meta.url);
 const kit = require('../index.cjs');
 
-const PRESET_NAMES = ['base', 'react', 'next', 'node', 'tests', 'strict'];
-const esmPresets = { base, react, next, node, tests, strict };
+const PRESET_NAMES = ['base', 'maxLines', 'react', 'next', 'node', 'tests', 'strict'];
+const esmPresets = { base, maxLines, react, next, node, tests, strict };
+const SIMPLE_PRESETS = ['base', 'maxLines', 'react', 'node', 'tests', 'strict'];
 
 function assertValidFlatConfigArray(configArray, label) {
   assert.ok(Array.isArray(configArray), `${label} should return an Array`);
@@ -35,7 +46,7 @@ test('ESM import: index.cjs exposes all named exports', () => {
 });
 
 test('each preset (except next) is a function returning a valid flat-config array under require()', () => {
-  for (const name of ['base', 'react', 'node', 'tests', 'strict']) {
+  for (const name of SIMPLE_PRESETS) {
     const preset = kit[name];
     assert.equal(typeof preset, 'function', `${name} should be a function`);
     const configArray = preset();
@@ -44,7 +55,7 @@ test('each preset (except next) is a function returning a valid flat-config arra
 });
 
 test('each preset (except next) is a function returning a valid flat-config array under import', () => {
-  for (const name of ['base', 'react', 'node', 'tests', 'strict']) {
+  for (const name of SIMPLE_PRESETS) {
     const preset = esmPresets[name];
     assert.equal(typeof preset, 'function', `${name} should be a function`);
     const configArray = preset();
@@ -72,13 +83,29 @@ test('base() contains the shared max-lines rule', () => {
 test('base({ anySeverity: "warn" }) sets no-explicit-any to warn', () => {
   const configArray = base({ anySeverity: 'warn' });
   // Multiple entries touch this rule (tseslint's own recommended config sets it too);
-  // find the kit's own rules block — identified by also carrying max-lines — since in
-  // real flat-config resolution, later entries in the array win over earlier ones.
-  const ownRulesBlock = configArray.find(
-    (entry) => entry.rules && Object.prototype.hasOwnProperty.call(entry.rules, 'max-lines')
+  // flat-config resolves last-match-wins, so assert on the LAST entry that sets it —
+  // the kit's own conventions block.
+  const settingBlocks = configArray.filter(
+    (entry) =>
+      entry.rules &&
+      Object.prototype.hasOwnProperty.call(entry.rules, '@typescript-eslint/no-explicit-any')
   );
-  assert.ok(ownRulesBlock, 'expected the kit-authored rules block');
-  assert.equal(ownRulesBlock.rules['@typescript-eslint/no-explicit-any'], 'warn');
+  assert.ok(settingBlocks.length > 0, 'expected a block setting no-explicit-any');
+  const last = settingBlocks[settingBlocks.length - 1];
+  assert.equal(last.rules['@typescript-eslint/no-explicit-any'], 'warn');
+});
+
+test('maxLines() yields the shared 500-line rule, and base() sources the same value', () => {
+  const findRule = (arr) =>
+    arr.find((e) => e.rules && Object.prototype.hasOwnProperty.call(e.rules, 'max-lines'))?.rules[
+      'max-lines'
+    ];
+  const expected = ['error', { max: 500, skipBlankLines: true, skipComments: true }];
+  assert.deepEqual(findRule(maxLines()), expected);
+  assert.deepEqual(findRule(base()), expected, 'base() must source max-lines from maxLines()');
+  // custom max is honoured
+  const [, opts] = findRule(maxLines({ max: 300 }));
+  assert.equal(opts.max, 300);
 });
 
 test('react({ allowExportNames: ["useX"] }) forwards allowExportNames', () => {
