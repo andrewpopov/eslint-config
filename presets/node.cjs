@@ -12,7 +12,7 @@ const globals = require('globals');
 function node(opts = {}) {
   const { toolingGlobs = ['**/scripts/**', '**/deploy/**'] } = opts;
 
-  return [
+  const config = [
     {
       languageOptions: {
         globals: {
@@ -20,14 +20,22 @@ function node(opts = {}) {
         },
       },
     },
-    {
+  ];
+
+  // A flat-config `files` key must be a non-empty array, so only add the
+  // tooling carve-out when there are globs. Passing `toolingGlobs: []` is the
+  // supported way to get node globals with no relaxations.
+  if (toolingGlobs.length > 0) {
+    config.push({
       files: toolingGlobs,
       rules: {
         '@typescript-eslint/no-require-imports': 'off',
         'no-console': 'off',
       },
-    },
-  ];
+    });
+  }
+
+  return config;
 }
 
 module.exports = node;

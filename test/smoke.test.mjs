@@ -95,6 +95,21 @@ test('base({ anySeverity: "warn" }) sets no-explicit-any to warn', () => {
   assert.equal(last.rules['@typescript-eslint/no-explicit-any'], 'warn');
 });
 
+test('node({ toolingGlobs: [] }) emits no empty-files block (valid flat config)', () => {
+  const cfg = node({ toolingGlobs: [] });
+  for (const entry of cfg) {
+    assert.notEqual(
+      Array.isArray(entry.files) && entry.files.length === 0,
+      true,
+      'node() must not emit a config with an empty files array'
+    );
+  }
+  // still provides node globals
+  assert.ok(cfg.some((e) => e.languageOptions && e.languageOptions.globals));
+  // default still includes the tooling carve-out
+  assert.ok(node().some((e) => Array.isArray(e.files) && e.files.length > 0));
+});
+
 test('maxLines() yields the shared 500-line rule, and base() sources the same value', () => {
   const findRule = (arr) =>
     arr.find((e) => e.rules && Object.prototype.hasOwnProperty.call(e.rules, 'max-lines'))?.rules[
