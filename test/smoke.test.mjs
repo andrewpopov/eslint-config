@@ -6,6 +6,7 @@ import { ESLint } from 'eslint';
 import {
   base,
   maxLines,
+  astro,
   react,
   next,
   node,
@@ -18,8 +19,8 @@ import {
 const require = createRequire(import.meta.url);
 const kit = require('../index.cjs');
 
-const PRESET_NAMES = ['base', 'maxLines', 'react', 'next', 'node', 'tests', 'strict'];
-const esmPresets = { base, maxLines, react, next, node, tests, strict };
+const PRESET_NAMES = ['base', 'maxLines', 'astro', 'react', 'next', 'node', 'tests', 'strict'];
+const esmPresets = { base, maxLines, astro, react, next, node, tests, strict };
 const SIMPLE_PRESETS = ['base', 'maxLines', 'react', 'node', 'tests', 'strict'];
 
 function assertValidFlatConfigArray(configArray, label) {
@@ -61,6 +62,12 @@ test('each preset (except next) is a function returning a valid flat-config arra
     const configArray = preset();
     assertValidFlatConfigArray(configArray, `import { ${name} }()`);
   }
+});
+
+test('astro() is a function (not exercised — eslint-plugin-astro is not installed here)', () => {
+  assert.equal(typeof kit.astro, 'function');
+  assert.equal(typeof astro, 'function');
+  assert.throws(() => astro(), /requires eslint-plugin-astro/);
 });
 
 test('next() is a function (not exercised — eslint-config-next is not installed here)', () => {
