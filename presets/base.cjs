@@ -1,6 +1,7 @@
 'use strict';
 
 const tseslint = require('typescript-eslint');
+const maxLines = require('./maxLines.cjs');
 
 /**
  * Base preset: TypeScript recommended + stylistic rules, plus a small set of
@@ -57,9 +58,11 @@ function base(opts = {}) {
           'error',
           { allowShortCircuit: true, allowTernary: true, allowTaggedTemplates: true },
         ],
-        'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
       },
     },
+    // Single-source the file-size cap from the maxLines() preset so base() and a
+    // ratchet-only adoption can never drift on the limit.
+    ...maxLines({ files }),
   ];
 }
 
