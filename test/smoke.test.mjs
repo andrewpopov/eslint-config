@@ -117,6 +117,39 @@ test('node({ toolingGlobs: [] }) emits no empty-files block (valid flat config)'
   assert.ok(node().some((e) => Array.isArray(e.files) && e.files.length > 0));
 });
 
+
+test('maxLines() exempts test files by default, and honours exemptTests:false', async () => {
+  // unique identifiers — repeating `const x` would redeclare and fail to parse,
+  // which would suppress max-lines entirely and make this test pass vacuously.
+  const long = Array.from({ length: 600 }, (_, i) => `const x${i} = 1;`).join('\n');
+  const lintWith = async (cfg, filePath) => {
+    const eslint = new ESLint({ overrideConfigFile: true, overrideConfig: cfg });
+    const [res] = await eslint.lintText(long, { filePath });
+    return res.messages.filter((m) => m.ruleId === 'max-lines').length;
+  };
+
+  // default: source capped, tests waived
+  assert.equal(await lintWith(maxLines(), 'src/big.ts'), 1, 'source file should still be capped');
+  assert.equal(await lintWith(maxLines(), 'src/big.test.ts'), 0, '*.test.ts should be waived');
+  assert.equal(await lintWith(maxLines(), 'src/__tests__/big.ts'), 0, '__tests__/** should be waived');
+
+  // opt out: tests capped again
+  assert.equal(
+    await lintWith(maxLines({ exemptTests: false }), 'src/big.test.ts'),
+    1,
+    'exemptTests:false should re-apply the cap to tests'
+  );
+
+  // custom globs: only the named set is waived
+  const custom = maxLines({ testGlobs: ['**/fixtures/**'] });
+  assert.equal(await lintWith(custom, 'src/fixtures/big.ts'), 0, 'custom glob waived');
+  assert.equal(await lintWith(custom, 'src/big.test.ts'), 1, 'non-listed test not waived');
+
+  // base() threads the option through
+  assert.equal(await lintWith(base(), 'src/big.test.ts'), 0, 'base() should waive tests too');
+  assert.equal(await lintWith(base({ exemptTests: false }), 'src/big.test.ts'), 1, 'base() honours opt-out');
+});
+
 test('maxLines() yields the shared 500-line rule, and base() sources the same value', () => {
   const findRule = (arr) =>
     arr.find((e) => e.rules && Object.prototype.hasOwnProperty.call(e.rules, 'max-lines'))?.rules[

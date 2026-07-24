@@ -7,11 +7,11 @@ const maxLines = require('./maxLines.cjs');
  * Base preset: TypeScript recommended + stylistic rules, plus a small set of
  * project-wide conventions shared across all consuming repos.
  *
- * @param {{ anySeverity?: string, ignores?: string[], files?: string[] }} [opts]
+ * @param {{ anySeverity?: string, ignores?: string[], files?: string[], exemptTests?: boolean, testGlobs?: string[] }} [opts]
  * @returns {import('eslint').Linter.Config[]}
  */
 function base(opts = {}) {
-  const { anySeverity = 'error', ignores = [], files = ['**/*.{ts,tsx}'] } = opts;
+  const { anySeverity = 'error', ignores = [], files = ['**/*.{ts,tsx}'], exemptTests, testGlobs } = opts;
 
   return [
     {
@@ -62,7 +62,7 @@ function base(opts = {}) {
     },
     // Single-source the file-size cap from the maxLines() preset so base() and a
     // ratchet-only adoption can never drift on the limit.
-    ...maxLines({ files }),
+    ...maxLines({ files, ...(exemptTests !== undefined && { exemptTests }), ...(testGlobs && { testGlobs }) }),
   ];
 }
 
