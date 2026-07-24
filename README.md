@@ -62,3 +62,7 @@ npm install
 npm test   # node --test — verifies every preset loads under both require() and import
 npm run lint
 ```
+
+## max-lines and test files
+
+`maxLines()` (and `base()`, which composes it) waives the size cap for test files by default — `*.test.*`, `*.spec.*`, `__tests__/**`, `__mocks__/**`, `tests/**`, `e2e/**`. Long test suites are usually long-and-cohesive rather than god-modules. Pass `exemptTests: false` to hold tests to the cap, or `testGlobs: [...]` to waive a different set (e.g. capping test helpers while waiving the rest).
