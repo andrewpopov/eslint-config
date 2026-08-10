@@ -10,10 +10,9 @@
  * resolved from the CONSUMER's context and required lazily here, and a clear
  * error is thrown if it isn't installed at all.
  *
- * @param {Record<string, unknown>} [_opts]
  * @returns {import('eslint').Linter.Config[]}
  */
-function next(_opts = {}) {
+function next() {
   const consumerPaths = [process.cwd()];
 
   let coreWebVitalsEntry;
@@ -32,19 +31,21 @@ function next(_opts = {}) {
   }
 
   if (coreWebVitalsEntry) {
-    try {
-      const nextConfig = require(coreWebVitalsEntry);
-      if (Array.isArray(nextConfig)) {
-        // Modern eslint-config-next ships a native flat-config array under
-        // this same subpath — use it directly, no FlatCompat bridge needed.
-        return nextConfig;
-      }
-    } catch {
-      // Loading the native entry failed for some reason (a legacy release's
-      // eslintrc-shaped export doing something unexpected at require time,
-      // an environment quirk, etc). Fall through to the FlatCompat bridge
-      // below rather than surfacing a confusing low-level error here.
+    // Let a genuine load error (a real bug in the installed package, a
+    // missing internal dependency, an environment quirk) propagate as-is —
+    // it's a different condition from "this export is legacy-shaped" below,
+    // and swallowing it here would replace a meaningful error with an
+    // unrelated FlatCompat failure once the bridge re-attempts the same
+    // broken require internally.
+    const nextConfig = require(coreWebVitalsEntry);
+    if (Array.isArray(nextConfig)) {
+      // Modern eslint-config-next ships a native flat-config array under
+      // this same subpath — use it directly, no FlatCompat bridge needed.
+      return nextConfig;
     }
+    // A successfully loaded but non-array export means an older release's
+    // eslintrc-shaped shareable config — fall through to the FlatCompat
+    // bridge below, which knows how to translate it.
   }
 
   // Legacy eslint-config-next (eslintrc-shaped shareable config) — bridge via
