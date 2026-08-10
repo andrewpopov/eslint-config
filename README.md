@@ -14,11 +14,11 @@ npm install --save-dev github:andrewpopov/eslint-config#v0.1.0
 - `base(opts)` — TypeScript recommended + stylistic rules, plus shared conventions
   (unused-vars, no-explicit-any, max-lines, etc).
 - `react(opts)` — `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh`.
-- `next(opts)` — wraps `eslint-config-next` via `FlatCompat`. Requires the consumer to have
+- `next()` — wraps `eslint-config-next` via `FlatCompat`. Requires the consumer to have
   `eslint-config-next` installed; throws a clear error otherwise. Not a dependency of this kit.
 - `node(opts)` — Node globals, with relaxed `no-console` / `no-require-imports` for tooling globs.
 - `tests(opts)` — relaxes `no-explicit-any` and `react-refresh/only-export-components` in test files.
-- `strict(opts)` — extra style battery (curly, eqeqeq, no-shadow, max-depth, etc).
+- `strict()` — extra style battery (curly, eqeqeq, no-shadow, max-depth, etc).
 - `layerBoundary({ files, patterns, message })` — factory for architecture-boundary
   `no-restricted-imports` blocks.
 - `exemptFilesFromRule(rule, files)` — factory for turning a rule off for a set of files.

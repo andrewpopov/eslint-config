@@ -9,10 +9,9 @@ const tseslint = require('typescript-eslint');
  * it's the same plugin object base() registers, so composing the two is
  * harmless.
  *
- * @param {Record<string, unknown>} [_opts]
  * @returns {import('eslint').Linter.Config[]}
  */
-function strict(_opts = {}) {
+function strict() {
   return [
     {
       plugins: {
