@@ -19,7 +19,14 @@
   ],
   "scripts": {
     "test": "node --test",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "verify": "npm test && npm run lint",
+    "release:note": "release-kit note",
+    "release:notes": "release-kit notes",
+    "release:bump": "release-kit bump",
+    "release:cut": "release-kit cut",
+    "release:check": "release-kit check",
+    "release:hygiene": "release-kit hygiene"
   },
   "dependencies": {
     "typescript-eslint": "8.64.0",
@@ -27,6 +34,7 @@
     "@eslint/eslintrc": "3.3.6"
   },
   "devDependencies": {
+    "@andrewpopov/release-kit": "github:andrewpopov/release-kit#v0.5.0",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.26"
   },
