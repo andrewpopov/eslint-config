@@ -26,7 +26,8 @@
     "release:bump": "release-kit bump",
     "release:cut": "release-kit cut",
     "release:check": "release-kit check",
-    "release:hygiene": "release-kit hygiene"
+    "release:hygiene": "release-kit hygiene",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "typescript-eslint": "8.64.0",
