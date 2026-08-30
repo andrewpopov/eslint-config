@@ -6,7 +6,7 @@ smarthome). CJS package, but importable from ESM consumers via named imports.
 ## Install
 
 ```bash
-npm install --save-dev github:andrewpopov/eslint-config#v0.1.0
+npm install --save-dev github:andrewpopov/eslint-config#v0.3.0
 ```
 
 ## What's in here
