@@ -71,8 +71,15 @@ fi
 # way a moved tag does. Add it the moment that stops being true — do not add it
 # now just because the sibling packages have it.
 
-# main defines `verify` as test + lint; use the repo's own script rather than
-# re-listing its steps here, so the gate cannot drift from `npm run verify`.
+# NO type gate (verify:types / typecheck) here, deliberately: this package has
+# no `types` field and exports ESLint flat-config objects/factories, not a
+# typed API — consumers `require()` it from plain JS/CJS configs (rouge does),
+# never import it as a TS surface. Add a hand-written index.d.ts + verify:types
+# the moment a consumer needs to import this from typed code.
+
+# main defines `verify` as test + lint + verify:pack; use the repo's own script
+# rather than re-listing its steps here, so the gate cannot drift from
+# `npm run verify`.
 step 'verify'
 npm run verify || fail 'verify'
 
