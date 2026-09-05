@@ -13,7 +13,13 @@ npm install --save-dev github:andrewpopov/eslint-config#v0.3.0
 
 - `base(opts)` — TypeScript recommended + stylistic rules, plus shared conventions
   (unused-vars, no-explicit-any, max-lines, etc).
-- `react(opts)` — `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh`.
+- `react(opts)` — `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh`. Pins the classic
+  hooks pair (`rules-of-hooks`, `exhaustive-deps`) as explicit rules by default, on every major of
+  `eslint-plugin-react-hooks` — `@6`/`@7`'s `recommended` also bundles the React Compiler rule set
+  (`set-state-in-effect`, `purity`, `immutability`, etc.), which this preset does not enable
+  unless asked. Pass `react({ compilerRules: true })` to spread that full `recommended` set in
+  too (the classic pair still wins on conflicts). On `@5`, `recommended` is already just the
+  classic pair, so `compilerRules` is a no-op there.
 - `next()` — wraps `eslint-config-next` via `FlatCompat`. Requires the consumer to have
   `eslint-config-next` installed; throws a clear error otherwise. Not a dependency of this kit.
 - `node(opts)` — Node globals, with relaxed `no-console` / `no-require-imports` for tooling globs.
