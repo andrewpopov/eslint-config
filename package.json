@@ -1,6 +1,6 @@
 {
   "name": "@andrewpopov/eslint-config",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Composable ESLint flat-config presets shared across andrewpopov personal projects.",
   "type": "commonjs",
   "main": "index.cjs",
@@ -36,7 +36,7 @@
     "typescript-eslint": "8.64.0"
   },
   "devDependencies": {
-    "@andrewpopov/release-kit": "github:andrewpopov/release-kit#v0.7.0",
+    "@andrewpopov/release-kit": "github:andrewpopov/release-kit#v0.7.1",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.26"
   },
